@@ -3,7 +3,7 @@ from util.file_utils import create_file_list, write_df_to_excel
 from lxml import objectify
 from tqdm import tqdm
 import files_path
-from flowXML_to_Excel import parse_flow_xml
+from util.flowXML_to_Excel import parse_flow_xml
 import os
 
 
