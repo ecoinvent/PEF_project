@@ -21,4 +21,5 @@ EXCEL_DESTINATION_DIRECTORY = os.path.join(BASE_DIR, "Data", "output", "excels")
 PROCESS_FILES_SOURCE_DIR = os.path.join(BASE_DIR, "Data", "input", "processes")
 PROCESS_FILES_Destination_DIR = os.path.join(BASE_DIR, "Data", "output", "process_files")
 DATASET_LIST_FLOWCHANGES = os.path.join(BASE_DIR, "Data", "input", "excel", "datasetList_flowChange.xlsx")
-
+MAPPED_EXCHANGES = os.path.join(BASE_DIR, "Data", "input", "excel", "TSexchangesToBeMapped_spec.xlsx")
+PILOT_THINKSTEP = os.path.join(BASE_DIR, "Data", "input", "excel", "PilotThinkstepDataUsed_spec.xlsx")

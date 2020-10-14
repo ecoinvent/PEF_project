@@ -110,7 +110,7 @@ class ParseExchangeOfProcessAndFlowsXmls:
                     exchange.referenceToFlowDataSet,
                     f"{self.__class__.common}shortDescription",
                 )
-
+                exchange_dict["location"] = getattr(exchange, "location", "")
                 exchange_dict["meanAmount"] = getattr(exchange, "meanAmount", "")
                 exchange_dict["resultingAmount"] = getattr(exchange, "resultingAmount", "")
         return exchange_dict
@@ -123,9 +123,11 @@ class ParseExchangeOfProcessAndFlowsXmls:
             exchanges_rows ([type]): [description]
         """
         self.meta_df = pd.DataFrame(meta_rows)
-        write_df_to_excel(files_path.EXCEL_DESTINATION_DIRECTORY, "processFlows_to_excel_thinkstep_complete.xlsx", self.meta_df)
+
+        # write_df_to_excel(files_path.EXCEL_DESTINATION_DIRECTORY, "processFlows_to_excel_thinkstep_complete.xlsx", self.meta_df)
 
 
-obj = ParseExchangeOfProcessAndFlowsXmls(
+if __name__ == "__main__":
+    obj = ParseExchangeOfProcessAndFlowsXmls(
         r"C:\Dropbox (ecoinvent)\ei-int\technical\external\PEF\PEF follow-up\execution\00_Thinkstep3.0_ILCD\thinkstepCompletev2\EF_30_all_datasets_TSv2_processFlows\processes"
     )

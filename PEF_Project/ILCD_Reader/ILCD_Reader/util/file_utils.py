@@ -4,7 +4,7 @@ import sys
 from scipy import sparse
 
 
-def create_file_list(folder_path):
+def create_file_list(folder_path, ext="xml"):
     """[scan the directory and build a list of files]
 
     Args:
@@ -18,7 +18,7 @@ def create_file_list(folder_path):
             file.path
             for file in os.scandir(folder_path)
             if os.path.isfile(os.path.join(folder_path, file))
-            and file.path.split(".")[-1] == "xml"
+            and file.path.split(".")[-1] == ext
         ]
         return list_of_files
 

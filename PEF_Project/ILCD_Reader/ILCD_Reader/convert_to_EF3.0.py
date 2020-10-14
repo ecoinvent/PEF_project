@@ -59,7 +59,6 @@ class ConvertToEF3:
         """
         matrix_B = file_utils.load_pkl_file(files_path.PICKLES_SOURCE_DIRECTORY, "B")
         self.matrix_B_array = matrix_B.todense()
-        print("shape", self.matrix_B_array.shape)
 
     def _merge_flowchanges_and_index(self):
         """[summary]
