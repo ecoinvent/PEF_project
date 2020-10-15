@@ -18,8 +18,8 @@ class ThinkstepIntegration:
         for i, file in enumerate(self.files, start=1):
             process_exchanges_df = self.read_exchanges_csv(i, file)
             process_mappingTable_df = self.__merge_processExchanges_with_mapping_template(process_exchanges_df, mapped_exchanges_df)
-            self.__merge_process_mapping_df_with_indexes(process_mappingTable_df, index_pef_ee)
-            self.__write_to_CSV("D:\\ecoinvent_scripts\\output\\merged", i)
+            second_merged_df = self.__merge_process_mapping_df_with_indexes(process_mappingTable_df, index_pef_ee)
+            self.__write_to_CSV(second_merged_df, "D:\\ecoinvent_scripts\\output\\merged", i)
         self.fetch_list_of_files("D:\\ecoinvent_scripts\\output\\merged")
         print(self.files)
         thinkstep_pilot_df = self.__read_pilot_thinkstep_template()
@@ -66,13 +66,14 @@ class ThinkstepIntegration:
 
     def __merge_process_mapping_df_with_indexes(self, first_merged_df, index_pef_ee):
         print("merging the result of process, mapping template with indexes ee...")
-        self.second_merged_df = pd.merge(
+        second_merged_df = pd.merge(
             first_merged_df,
             index_pef_ee,
             how="left",
             left_on=["exchange name", "compartment", "subcompartment"],
             right_on=["name", "compartment", "subcompartment"],
         )
+        return second_merged_df
 
     def __read_pilot_thinkstep_template(self):
         print("Reading Pilot Thinkstep...")
