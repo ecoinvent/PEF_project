@@ -11,24 +11,24 @@ class ThinkstepIntegration:
         self.files = []
 
     def start_processing(self):
-        # self.create_exchanges_df()
-        mapped_exchanges_df = self.__read_mapping_template()
-        index_pef_ee = self.__read_index_PEF("ee")
-        self.fetch_list_of_files("D:\\ecoinvent_scripts\\output")
-        for i, file in enumerate(self.files, start=1):
-            process_exchanges_df = self.read_exchanges_csv(i, file)
-            process_mappingTable_df = self.__merge_processExchanges_with_mapping_template(process_exchanges_df, mapped_exchanges_df)
-            self.__merge_process_mapping_df_with_indexes(process_mappingTable_df, index_pef_ee)
-            self.__write_to_CSV("D:\\ecoinvent_scripts\\output\\merged", i)
-        self.fetch_list_of_files("D:\\ecoinvent_scripts\\output\\merged")
-        print(self.files)
-        thinkstep_pilot_df = self.__read_pilot_thinkstep_template()
-        index_pef_ie = self.__read_index_PEF("ie")
-        for i, file in enumerate(self.files, start=1):
-            merged_file_df = self.__read_generated_merged_templates(file)
-            merged_thinkstep_df = self.__merge_generateFiles_with_thinkstep_pilot(thinkstep_pilot_df, merged_file_df)
-            merged_thinkstep_ie_df = self.__merge_thinkstep_with_index_ie(merged_thinkstep_df, index_pef_ie)
-            self.__write_to_CSV(merged_thinkstep_ie_df, "D:\\ecoinvent_scripts\\output\\merges_results_thinkstep_pilot", i)
+        self.create_exchanges_df()
+        # mapped_exchanges_df = self.__read_mapping_template()
+        # index_pef_ee = self.__read_index_PEF("ee")
+        # self.fetch_list_of_files("D:\\ecoinvent_scripts\\output")
+        # for i, file in enumerate(self.files, start=1):
+        #     process_exchanges_df = self.read_exchanges_csv(i, file)
+        #     process_mappingTable_df = self.__merge_processExchanges_with_mapping_template(process_exchanges_df, mapped_exchanges_df)
+        #     second_merged_df = self.__merge_process_mapping_df_with_indexes(process_mappingTable_df, index_pef_ee)
+        #     self.__write_to_CSV(second_merged_df, "D:\\ecoinvent_scripts\\output\\merged", i)
+        # self.fetch_list_of_files("D:\\ecoinvent_scripts\\output\\merged")
+        # print(self.files)
+        # thinkstep_pilot_df = self.__read_pilot_thinkstep_template()
+        # index_pef_ie = self.__read_index_PEF("ie")
+        # for i, file in enumerate(self.files, start=1):
+        #     merged_file_df = self.__read_generated_merged_templates(file)
+        #     merged_thinkstep_df = self.__merge_generateFiles_with_thinkstep_pilot(thinkstep_pilot_df, merged_file_df)
+        #     merged_thinkstep_ie_df = self.__merge_thinkstep_with_index_ie(merged_thinkstep_df, index_pef_ie)
+        #     self.__write_to_CSV(merged_thinkstep_ie_df, "D:\\ecoinvent_scripts\\output\\merges_results_thinkstep_pilot", i)
 
     def create_exchanges_df(self):
         parse_obj = ParseProcessExchanges(files_path.PROCESS_FILES_SOURCE_DIR)
@@ -66,13 +66,14 @@ class ThinkstepIntegration:
 
     def __merge_process_mapping_df_with_indexes(self, first_merged_df, index_pef_ee):
         print("merging the result of process, mapping template with indexes ee...")
-        self.second_merged_df = pd.merge(
+        second_merged_df = pd.merge(
             first_merged_df,
             index_pef_ee,
             how="left",
             left_on=["exchange name", "compartment", "subcompartment"],
             right_on=["name", "compartment", "subcompartment"],
         )
+        return second_merged_df
 
     def __read_pilot_thinkstep_template(self):
         print("Reading Pilot Thinkstep...")

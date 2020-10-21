@@ -4,8 +4,6 @@ import os
 # BASE_DIR => \ecoinvent_scripts\PEF_Project\ILCD_Reader
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
-
 UPDATE_AMOUNTS_FOR_WATER_RESOURCES = os.path.join(BASE_DIR, "Data", "input", "excel, updated amounts for correction_MatrixZ.xlsx")
 INDEXES_PEF_ALLOCATION = os.path.join(BASE_DIR, "Data", "input", "excel", "indexes_PEF-phase 2-start_Allocation, cut-off.xlsx")
 INDEXES_WATERBALANCE_CORRECTION = os.path.join(BASE_DIR, "Data", "input", "excel", "indexes_waterBalance_correction_20200326.xlsx")

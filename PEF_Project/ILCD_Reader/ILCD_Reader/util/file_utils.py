@@ -1,7 +1,7 @@
 import os
 import pickle
 import sys
-from scipy import sparse
+# from scipy import sparse
 
 
 def create_file_list(folder_path, ext="xml"):
