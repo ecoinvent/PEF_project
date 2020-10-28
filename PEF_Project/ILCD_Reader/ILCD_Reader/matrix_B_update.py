@@ -112,5 +112,6 @@ class MatrixBUpdate:
             pickle.dump(self.csc_updated_matrixB, file, protocol=pickle.HIGHEST_PROTOCOL)
 
 
+
 obj = MatrixBUpdate()
 obj.ReplaceElements()

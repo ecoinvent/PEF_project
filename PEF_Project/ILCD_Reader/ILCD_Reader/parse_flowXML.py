@@ -21,11 +21,9 @@ class ParseXML:
         Returns:
             [type]: [description]
         """
-        print(xml_file)
+       
         parsedFile = objectify.parse(xml_file)
-        print('Parsed ', parsedFile)
         root = parsedFile.getroot()
-        print('root', root.tag)
         return cls(root)
 
 
@@ -214,6 +212,7 @@ class FlowFiles:
                 elements_dict[
                     f"elementaryFlowCategorization.category_level{level}"
                 ] = elem
+
         elif type(classification) != str:
             for elem in classification.getchildren():
                 level = elem.attrib["level"]

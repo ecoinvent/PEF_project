@@ -1,5 +1,6 @@
-/PEF_Project/ILCD_Reader/ILCD_Reader/__pycache__
-/PEF_Project/ILCD_Reader/ILCD_Reader/util/__pycache__
 /output
 /PEF_Project/ILCD_Reader/Data
-/PEF_Project/ILCD_Reader/ILCD_Reader/checking_with_matrix.ipynb
+*.ipynb
+*.pyc
+*.pkl
+*.xlsx

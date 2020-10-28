@@ -23,7 +23,7 @@ class ParseExchangeOfProcessAndFlowsXmls:
     """generate excel file that contains 3 different tabs(meta, upr, pivot) from the process files"""
     common = "{http://lca.jrc.it/ILCD/Common}"
     process = "{http://lca.jrc.it/ILCD/Process}"
-    flow_files_path = r"C:\Dropbox (ecoinvent)\ei-int\technical\external\PEF\PEF follow-up\execution\00_Thinkstep3.0_ILCD\thinkstepCompletev2\EF_30_all_datasets_TSv2_processFlows\flows"
+    flow_files_path = r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\input\flows\flows"
 
     def __init__(self, source_dir):
         self.source_dir = source_dir
@@ -60,6 +60,7 @@ class ParseExchangeOfProcessAndFlowsXmls:
             file_name = file.split("\\")[-1]
             elements_dict = self.__read_elements(parsed_file.root, file_name)
             exchange_dict = self.__read_exchanges(parsed_file.root, elements_dict)
+            flow_dict = {}
 
             if(elements_dict["referenceToReferenceFlow"]):
                 flow_file_name = os.path.join(self.flow_files_path, exchange_dict["referenceToFlowDataSet_refObjectId"] + ".xml")
@@ -123,11 +124,10 @@ class ParseExchangeOfProcessAndFlowsXmls:
             exchanges_rows ([type]): [description]
         """
         self.meta_df = pd.DataFrame(meta_rows)
-
-        # write_df_to_excel(files_path.EXCEL_DESTINATION_DIRECTORY, "processFlows_to_excel_thinkstep_complete.xlsx", self.meta_df)
+        write_df_to_excel(files_path.EXCEL_DESTINATION_DIRECTORY, "processFlows_to_excel_thinkstep_complete.xlsx", self.meta_df)
 
 
 if __name__ == "__main__":
     obj = ParseExchangeOfProcessAndFlowsXmls(
-        r"C:\Dropbox (ecoinvent)\ei-int\technical\external\PEF\PEF follow-up\execution\00_Thinkstep3.0_ILCD\thinkstepCompletev2\EF_30_all_datasets_TSv2_processFlows\processes"
+        r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\input\processes"
     )

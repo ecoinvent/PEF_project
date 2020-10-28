@@ -1,8 +1,8 @@
 import os
 import pickle
 import sys
-# from scipy import sparse
-
+from scipy import sparse
+import files_path
 
 def create_file_list(folder_path, ext="xml"):
     """[scan the directory and build a list of files]
@@ -61,7 +61,8 @@ def dump_to_pickle(matrix_name, csc_matrix):
         csc_matrix ([type]): [csc matrix]
     """
     if isinstance(matrix_name, str) and type(csc_matrix) == sparse.csc.csc_matrix:
-        with open(f"{matrix_name}.pkl", "wb") as outfile:
+        target_dir = os.path.join(files_path.PICKLE_DESTINATION_DIRECTORY, f"{matrix_name}.pkl")
+        with open(target_dir, "wb") as outfile:
             pickle.dump(csc_matrix, outfile, pickle.HIGHEST_PROTOCOL)
 
 
