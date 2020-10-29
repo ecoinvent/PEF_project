@@ -24,20 +24,19 @@ class ThinkstepIntegration:
         #     process_mappingTable_df = self.__merge_processExchanges_with_mapping_template(process_exchanges_df, mapped_exchanges_df)
         #     concatenated_df = pd.concat([temp_df, process_mappingTable_df])
         #     temp_df = concatenated_df
-        #     print("first", temp_df.shape)
         # grouped_df = self.__groupby_dataframe(temp_df)
         # print("grouped", grouped_df.columns)
         # second_merged_df = self.__merge_process_mapping_df_with_indexes(grouped_df, index_pef_ee)
         # print("nulling", second_merged_df['index'].isnull().sum())
         # null_df = second_merged_df[second_merged_df['index'].isnull()]
         # null_df.drop_duplicates(subset=["exchange name", "compartment", "subcompartment"], keep='first', inplace=True)
-        # print("second", second_merged_df)
+        # print("nulling again", second_merged_df['index'].isnull().sum())
+        # self.__write_to_Excel(null_df, "D:\\ecoinvent_scripts\\output\\merged\\checking")
         # self.__write_to_csv(second_merged_df, "D:\\ecoinvent_scripts\\output\\merged")
 
         # self.fetch_list_of_files("D:\\ecoinvent_scripts\\output\\merged", "csv")
 
         # thinkstep_pilot_df = self.__read_pilot_thinkstep_template()
-        # index_pef_ie = self.__read_index_PEF("ie")
         # merged_file_df = self.__read_generated_merged_templates("D:\\ecoinvent_scripts\\output\\merged\\file0.csv")
         # for i, file in enumerate(self.files, start=1):
         #     merged_thinkstep_df = self.__merge_generateFiles_with_thinkstep_pilot(thinkstep_pilot_df, merged_file_df)
@@ -45,10 +44,10 @@ class ThinkstepIntegration:
         #     self.__write_to_csv(merged_thinkstep_df, "D:\\ecoinvent_scripts\\output\\merges_results_thinkstep_pilot", i)
 
         # self.__update_matrix_B()
+        # self.__update_matrix_B_with_resultiAmount()
         # self.__scaling_matrix_B()
         # self.__read_process_flows_excel()
 
-        # self.__update_matrix_A()
         self.__update_matrix_A_and_Z()
 
     def create_exchanges_df(self):
@@ -109,7 +108,7 @@ class ThinkstepIntegration:
         filt = (thinkstep_df["type of replacement"] == type_replacement)
         thinkstep_df = thinkstep_df.loc[filt, :]
         print("writing filtered...")
-        # thinkstep_df.to_excel(r"D:\ecoinvent_scripts\output\merges_results_thinkstep_pilot\type_filtered.xlsx",  index=False)
+        thinkstep_df.to_excel(r"D:\ecoinvent_scripts\output\merges_results_thinkstep_pilot\type_filtered.xlsx",  index=False)
         return thinkstep_df
 
     def __read_generated_merged_templates(self, file):
@@ -163,6 +162,7 @@ class ThinkstepIntegration:
 
     def __find_unique_ie_index(self):
         ie_list = self.dataframe["matrix ie index"].unique().tolist()
+        print("len", len(ie_list))
         return ie_list
 
     def __set_B_matix_columns_to_zero(self, B_matrix_csc, ie_list):
@@ -172,6 +172,64 @@ class ThinkstepIntegration:
         print("B shape", ie_list)
         for i in ie_list:
             self.B_matrix_array[:, i] = 0
+
+    def __write2Pickle(self):
+        print("Writing matrix to pickle file...")
+        csc_B_matrix = sparse.csc_matrix(self.B_matrix_array)
+        dump_to_pickle("B", csc_B_matrix)
+
+    def __update_matrix_B_with_resultiAmount(self):
+        df = pd.read_csv(r"D:\ecoinvent_scripts\output\merges_results_thinkstep_pilot\file1.csv")
+        B = load_pkl_file(r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\output\pickles\B.pkl")
+        Bcoo = B.tocoo()
+        B_coordinates_list = list(zip(Bcoo.row, Bcoo.col))
+        # B_data = Bcoo.data.tolist()
+        ee_index_list = df["index"].tolist()
+        ie_index_list = df["matrix ie index"].tolist()
+        result_list = df["resultingAmount"].tolist()
+        new_B_coordinates = list(zip(ee_index_list, ie_index_list))
+        B_coordinates_list.extend(new_B_coordinates)
+        # if len(set(B_coordinates_list)) == len(B_coordinates_list):
+        #     print("no issueee")
+        list1, list2 = zip(*B_coordinates_list)
+        print("shape", Bcoo.data.shape)
+        data_list = Bcoo.data.tolist()
+        print(type(data_list))
+        print(type(result_list))
+        data_list.extend(result_list)
+        print("list1 len", len(list1))
+        print("list2 len", len(list2))
+        print("max value1", max(list1))
+        print("max value2", max(list2))
+        print("combined data len", len(data_list))
+        coo_matrix = sparse.coo_matrix((data_list, (list1, list2)), shape=(max(list1)+1, max(list2)+1))
+        print(coo_matrix.shape)
+        csc_matrix = coo_matrix.tocsc()
+        print("csc", csc_matrix.shape)
+        self.__write_csc_matrix_2Pickle("newwB", csc_matrix)
+        # B_matrix_array = B.todense()
+        # count = 0
+        # print(len(B_coordinates_list))
+        # for index, value in enumerate(B_coordinates_list):
+        #     print(index)
+        #     if value in new_B_coordinates:
+        #         print("valueeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", value)
+        #         count = count + 1
+        # print("total", count)
+        # max_ee_value = df["index"].max()
+        # print("maxx", max_ee_value)
+        # row_numbers = max_ee_value - B.shape[0] + 1
+        # X = np.zeros((row_numbers, B_matrix_array.shape[1]))
+        # B_matrix_array = np.vstack((B_matrix_array, X))
+        # csc_B_matrix = sparse.csc_matrix(B_matrix_array)
+        # print(df.shape)
+        # for i, row in df[["index", "matrix ie index", "resultingAmount"]].iterrows():
+        #     print(i)
+        #     x = int(row['index'])
+        #     y = int(row['matrix ie index'])
+        #     v = row["resultingAmount"]
+        #     csc_B_matrix[x, y] = v
+        # self.__write_csc_matrix_2Pickle("newwB", csc_B_matrix)
 
     def __read_indexes_columns(self):
         ee_list = self.dataframe["index_x"].tolist()
@@ -191,11 +249,6 @@ class ThinkstepIntegration:
         for i, j, result in zip(ee_list, ie_list, result_list):
             print("i: ", i, " j: ", j)
             self.B_matrix_array[int(i), int(j)] = result
-
-    def __write2Pickle(self):
-        print("Writing matrix to pickle file...")
-        csc_B_matrix = sparse.csc_matrix(self.B_matrix_array)
-        dump_to_pickle("B", csc_B_matrix)
 
     def __scaling_matrix_B(self):
         pilot_thinkstep_df = self.__read_pilot_thinkstep_template()
@@ -222,11 +275,11 @@ class ThinkstepIntegration:
         return merged_processFlows_pilot_df
 
     def __divide_matrix_B_columns(self, df):
-        csc_MatrixB = load_pkl_file(files_path.MATRIX_B_PICKLE)
+        csc_MatrixB = load_pkl_file(r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\output\pickles\newwB.pkl")
 
         for i, row in df.iterrows():
             csc_MatrixB[:, row["matrix ie index"]] = csc_MatrixB[:, row["matrix ie index"]] / row["resultingAmount"]
-        self.__write_csc_matrix_2Pickle("B", csc_MatrixB)
+        self.__write_csc_matrix_2Pickle("latestB", csc_MatrixB)
 
     def __update_matrix_A_and_Z(self):
         pilot_thinkstep_df = self.__read_pilot_thinkstep_template("1 to many")
@@ -237,13 +290,13 @@ class ThinkstepIntegration:
             y = int(row['process ie index'])
             v = row["share"]
             A[x, y] = v
-        self.__write_csc_matrix_2Pickle("A", A)
+        self.__write_csc_matrix_2Pickle("newA", A)
         self.__update_matrix_Z(A)
 
     def __update_matrix_Z(self, A):
         Z = -A
         Z.setdiag(0)
-        self.__write_csc_matrix_2Pickle("A", A)
+        self.__write_csc_matrix_2Pickle("newZ", Z)
 
     def __write_csc_matrix_2Pickle(self, matrix_name, csc_matrix):
         dump_to_pickle(matrix_name, csc_matrix)
