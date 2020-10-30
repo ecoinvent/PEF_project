@@ -42,6 +42,7 @@ class ParseProcessExchanges:
         self.__create_name_list()
         last_file = self.files[-1]
         print(last_file)
+
         for file in tqdm(self.files):
             if self.count == 500:
                 self.files = self.files[self.count:]
@@ -50,26 +51,27 @@ class ParseProcessExchanges:
                 self.count = 0
             if file == last_file:
                 self.__create_df(process_rows)
-                try:
-                    with open(file, "r", encoding="utf-8") as xml_f:
-                        parsed_file = ParseXML.parse_file(xml_f)
-                except IOError as error:
-                    print(f"Couldnt process {file}, {error}")
-
+                process_rows = []
+                parsed_file = self.__open_xml_file(file)
                 file_name = file.split("\\")[-1]
                 elements_list = self.__read_elements(parsed_file.root, file_name)
                 process_rows.extend(elements_list)
                 self.__create_df(process_rows)
-            try:
-                with open(file, "r", encoding="utf-8") as xml_f:
-                    parsed_file = ParseXML.parse_file(xml_f)
-            except IOError as error:
-                print(f"Couldnt process {file}, {error}")
 
+            parsed_file = self.__open_xml_file(file)
             file_name = file.split("\\")[-1]
             elements_list = self.__read_elements(parsed_file.root, file_name)
             process_rows.extend(elements_list)
             self.count = self.count + 1
+
+    def __open_xml_file(self, file):
+        parsed_file = None
+        try:
+            with open(file, "r", encoding="utf-8") as xml_f:
+                parsed_file = ParseXML.parse_file(xml_f)
+        except IOError as error:
+            print(f"Couldnt process {file}, {error}")
+        return parsed_file
 
     def __read_elements(self, root, file_name):
         """[summary]

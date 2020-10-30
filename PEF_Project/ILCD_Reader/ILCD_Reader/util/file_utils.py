@@ -3,6 +3,8 @@ import pickle
 import sys
 from scipy import sparse
 import files_path
+from copy import copy
+
 
 def create_file_list(folder_path, ext="xml"):
     """[scan the directory and build a list of files]
@@ -64,6 +66,32 @@ def dump_to_pickle(matrix_name, csc_matrix):
         target_dir = os.path.join(files_path.PICKLE_DESTINATION_DIRECTORY, f"{matrix_name}.pkl")
         with open(target_dir, "wb") as outfile:
             pickle.dump(csc_matrix, outfile, pickle.HIGHEST_PROTOCOL)
+
+
+def pkl_dump(folder, variable_name, variable, feedback=False):
+    '''helper function for saving files in pkl'''
+    if not variable_name[-4:] == '.pkl':
+        filename = os.path.join(folder, variable_name + '.pkl')
+    else:
+        filename = os.path.join(folder, variable_name)
+    file = open(filename, 'wb')
+    pickle.dump(variable, file, protocol=pickle.HIGHEST_PROTOCOL)
+    file.close()
+    if feedback:
+        print('created "%s" in %s' % (variable_name, folder))
+
+
+def pkl_load(folder, variable_name):
+    '''load a variable saved in pkl'''
+    variable_name = copy(str(variable_name))
+    if not variable_name[-4:] == '.pkl':
+        filename = os.path.join(folder, variable_name + '.pkl')
+    else:
+        filename = os.path.join(folder, variable_name)
+    file = open(filename, 'rb')
+    v = pickle.load(file)
+    file.close()
+    return v
 
 
 def write_df_to_excel(outputdir, file_name, df):

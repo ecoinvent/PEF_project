@@ -191,6 +191,7 @@ class ThinkstepIntegration:
         B_coordinates_list.extend(new_B_coordinates)
         # if len(set(B_coordinates_list)) == len(B_coordinates_list):
         #     print("no issueee")
+        print("from dataframe", max(ee_index_list))
         list1, list2 = zip(*B_coordinates_list)
         print("shape", Bcoo.data.shape)
         data_list = Bcoo.data.tolist()
@@ -206,7 +207,7 @@ class ThinkstepIntegration:
         print(coo_matrix.shape)
         csc_matrix = coo_matrix.tocsc()
         print("csc", csc_matrix.shape)
-        self.__write_csc_matrix_2Pickle("newwB", csc_matrix)
+        self.__write_csc_matrix_2Pickle("tryingB", csc_matrix)
         # B_matrix_array = B.todense()
         # count = 0
         # print(len(B_coordinates_list))

@@ -78,11 +78,13 @@ class Score2Template:
 
         directory_list = [scaling_folder, lci_folder, lcia_folder]
         self.check_path_exist(directory_list)
+        print("b", matrix_B_data.shape)
+        print("c", matrix_C_data.shape)
 
-        calculate_scalings(indexes_data, matrix_A_data, matrix_Z_data, scaling_folder, dataset_to_iterate)
-        calculate_g(
-            scaling_folder, indexes_data, matrix_B_data, lci_folder, dataset_to_iterate
-        )
+        # calculate_scalings(indexes_data, matrix_A_data, matrix_Z_data, scaling_folder, dataset_to_iterate)
+        # calculate_g(
+        #     scaling_folder, indexes_data, matrix_B_data, lci_folder, dataset_to_iterate
+        # )
         calculate_h(
             lci_folder, indexes_data, matrix_C_data, lcia_folder, dataset_to_iterate
         )

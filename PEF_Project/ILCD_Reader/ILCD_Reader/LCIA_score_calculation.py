@@ -1,8 +1,7 @@
 import numpy
 from scipy.sparse import find, linalg
 import pyprind
-
-import utils
+from util.file_utils import pkl_dump, pkl_load
 
 
 def create_demand_vector(ie_number, indexes, A):
@@ -63,7 +62,7 @@ def calculate_scalings(indexes, A, Z, scaling_folder, dataset_to_iterate=[]):
                                format(len(dataset_to_iterate))):
         s = solve(ie, indexes, A, LU, null_rows)
         filename = str(indexes.toggle['ie'][ie])
-        utils.pkl_dump(scaling_folder, filename, s)
+        pkl_dump(scaling_folder, filename, s)
 
 
 def calculate_g(scaling_folder, indexes, B, LCI_folder, to_iterate=[]):
@@ -71,25 +70,24 @@ def calculate_g(scaling_folder, indexes, B, LCI_folder, to_iterate=[]):
         to_iterate = indexes.ie
     for ie in pyprind.prog_bar(to_iterate, title='calculating LCI for %s datasets' % len(to_iterate)):
         ie_number = indexes.toggle['ie'][ie]
-        s = utils.pkl_load(scaling_folder, str(ie_number))
+        s = pkl_load(scaling_folder, str(ie_number))
         g = B*s
         assert numpy.nan not in g
         g = numpy.reshape(g, (g.shape[0], 1))
-        utils.pkl_dump(LCI_folder, str(ie_number), g)
+        pkl_dump(LCI_folder, str(ie_number), g)
 
 
 def calculate_h(LCI_folder, indexes, C, LCIA_folder, to_iterate=[]):
     if len(to_iterate) == 0:
         to_iterate = indexes.ie
+    print("c shape", C.shape)
     for ie in pyprind.prog_bar(to_iterate, title='calculating LCIA for %s datasets' % len(to_iterate)):
         ie_number = indexes.toggle['ie'][ie]
-        g = utils.pkl_load(LCI_folder, str(ie_number))
+        g = pkl_load(LCI_folder, str(ie_number))
+        print("g shape", g.shape)
         try:
             h = C*g
         except ValueError:
             h = C.transpose()*g
         assert numpy.nan not in h
-        utils.pkl_dump(LCIA_folder, str(ie_number), h)
-
-
-
+        pkl_dump(LCIA_folder, str(ie_number), h)
