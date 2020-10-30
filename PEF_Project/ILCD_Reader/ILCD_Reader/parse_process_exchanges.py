@@ -28,14 +28,6 @@ class ParseProcessExchanges:
         self.df_count = 0
         self.count = 0
 
-    @classmethod
-    def from_input(cls):
-        return cls(
-            input(
-                "Please Enter Path of Source folder that contain matrices and indexes: "
-            )
-        )
-
     def __create_name_list(self):
         """[summary]
         """
@@ -46,17 +38,18 @@ class ParseProcessExchanges:
         """
         process_rows = []
         elements_list = []
+        parsed_file = None
         self.__create_name_list()
         last_file = self.files[-1]
         print(last_file)
         for file in tqdm(self.files):
-            # if self.count == 500 or file == last_file:
-            if file.split("\\")[-1] == "fff9d104-6326-4392-9ed7-4175d96b3d49.xml":
+            if self.count == 500:
                 self.files = self.files[self.count:]
-                print("after", len(self.files))
-                # self.__create_df(process_rows)
+                self.__create_df(process_rows)
                 process_rows = []
                 self.count = 0
+            if file == last_file:
+                self.__create_df(process_rows)
                 try:
                     with open(file, "r", encoding="utf-8") as xml_f:
                         parsed_file = ParseXML.parse_file(xml_f)
@@ -67,7 +60,16 @@ class ParseProcessExchanges:
                 elements_list = self.__read_elements(parsed_file.root, file_name)
                 process_rows.extend(elements_list)
                 self.__create_df(process_rows)
-                self.count = self.count + 1
+            try:
+                with open(file, "r", encoding="utf-8") as xml_f:
+                    parsed_file = ParseXML.parse_file(xml_f)
+            except IOError as error:
+                print(f"Couldnt process {file}, {error}")
+
+            file_name = file.split("\\")[-1]
+            elements_list = self.__read_elements(parsed_file.root, file_name)
+            process_rows.extend(elements_list)
+            self.count = self.count + 1
 
     def __read_elements(self, root, file_name):
         """[summary]
@@ -125,6 +127,5 @@ class ParseProcessExchanges:
         print("")
         print(f"writing dataframe number {self.df_count}")
         meta_df = pd.DataFrame(process_rows)
-        meta_df.to_csv(f"D:\\ecoinvent_scripts\\output\\smaller\\onlyone{self.df_count}.csv")
-        print("i have been written")
+        meta_df.to_csv(f"D:\\ecoinvent_scripts\\output\\smaller\\test\\file{self.df_count}.csv")
         self.df_count = self.df_count + 1

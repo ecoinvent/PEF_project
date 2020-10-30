@@ -5,9 +5,10 @@ from tqdm import tqdm
 import pickle
 import sys
 import files_path
-
+import os
 
 # Generate Matrix Exhanges
+
 
 class MatrixExchanges:
 
@@ -89,7 +90,7 @@ class MatrixExchanges:
         if matrix_name == "A" or matrix_name == "Z":
             exchange = "ie"
             for col in ie_df_cols:
-                new_index_df = next(iter(index_df)).copy()
+                new_index_df = index_df.copy()
                 renamed_index_df = self.rename_index_df_columns(new_index_df, col, exchange)
                 df = pd.merge(
                     df, renamed_index_df, how="left", left_on=col, right_on="index"
@@ -106,18 +107,18 @@ class MatrixExchanges:
                 df.drop("index", axis=1, inplace=True)
             return df
 
-    def concat_dataframes(self, folder_path, matrices_list, index_pkl_data):
+    def concat_dataframes(self, folder_path, matrices_list, index_data):
         if isinstance(matrices_list, list):
             matrices_iter = iter(matrices_list)
             first_matrix = next(matrices_iter)
             first_matrix_df = self.convert_matrix_to_df(folder_path, first_matrix)
             merged_index_matriceZ = self.merge_index_df_with_matrices(
-                first_matrix_df, first_matrix, index_pkl_data
+                first_matrix_df, first_matrix, index_data
             )
             second_matrix = next(matrices_iter)
             second_matrix_df = self.convert_matrix_to_df(folder_path, second_matrix)
             merged_index_matriceB = self.merge_index_df_with_matrices(
-                second_matrix_df, second_matrix, index_pkl_data
+                second_matrix_df, second_matrix, index_data
             )
             concatented_df = pd.concat(
                 [merged_index_matriceZ, merged_index_matriceB], sort=False
@@ -178,9 +179,19 @@ class MatrixExchanges:
             dataset: merged_df3.loc[merged_df3["Dataset_type"] == dataset, :].copy()
             for dataset in dataset_type_list
         }
+        Ts_other_df = dataframes_dict.pop("TS other")
+        Ts_el_df = dataframes_dict.pop("TS el")
+        Ts_other_df1 = Ts_other_df.iloc[:500000, :]
+        Ts_other_df2 = Ts_other_df.iloc[500000:, :]
+        Ts_el_df1 = Ts_el_df.iloc[:500000, :]
+        Ts_el_df2 = Ts_el_df.iloc[500000:, :]
+
+        Ts_other_dicitonary = {"Ts_other_firstHalf": Ts_other_df1, "Ts_other_secondHalf": Ts_other_df2}
+        Ts_el_dicitonary = {"Ts_el_firstHalf": Ts_el_df1, "Ts_el_secondHalf": Ts_el_df2}
+        dataframes_dict = {**dataframes_dict, **Ts_other_dicitonary, **Ts_el_dicitonary}
         df_shapes_list = []
         writer = pd.ExcelWriter(
-            r"D:\ecoinvent_scripts\Matrix Exchanges new.xlsx", engine="xlsxwriter"
+            r"D:\ecoinvent_scripts\Matrix Exchanges.xlsx", engine="xlsxwriter"
         )
         print("Starting the writing process...")
         for key in tqdm(dataframes_dict):
@@ -196,7 +207,7 @@ class MatrixExchanges:
         print()
         print("Saving Excel File in process...")
         writer.save()
-        """Applying filtering on dataframe to divide into different sheets"""
+        # """Applying filtering on dataframe to divide into different sheets"""
 
     def dataframe_to_excel(self, folder_path, file_name):
         df = self.input_matrix_names(folder_path, file_name)
@@ -206,18 +217,18 @@ class MatrixExchanges:
         with open("MergedMatrixB.pkl", "wb") as outfile:
             pickle.dump(df, outfile, pickle.HIGHEST_PROTOCOL)
 
-        # with pd.ExcelWriter(os.path.join(folder_path, 'MatrixExchange.xlsx')) as writer:
-        #     try:
-        #         df.to_excel(writer, sheet_name="Sheet 1", index=False)
-        #     except ValueError as error:
-        #         print(error)
+        with pd.ExcelWriter(os.path.join(folder_path, 'MatrixExchange.xlsx')) as writer:
+            try:
+                df.to_excel(writer, sheet_name="Sheet 1", index=False)
+            except ValueError as error:
+                print(error)
 
         # df.to_excel(r"D:\ecoinvent_scripts\MergedmatrixAnew.xlsx")
 
 
 if __name__ == "__main__":
     folder_path = files_path.PICKLES_SOURCE_DIRECTORY
-    file_name = "indexes_PEF-phase 2-start_Allocation.xlsx"
+    file_name = "indexes.xlsx"
     user_input = input(
         "Choose option (1) for customized excel or (2) for generating excel with one sheet "
     )

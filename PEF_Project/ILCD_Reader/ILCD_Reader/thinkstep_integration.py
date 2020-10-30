@@ -14,7 +14,7 @@ class ThinkstepIntegration:
         self.files = []
 
     def start_processing(self):
-        # self.create_exchanges_df()
+        self.create_exchanges_df()
         # mapped_exchanges_df = self.__read_mapping_template()
         # index_pef_ee = self.__read_index_PEF("ee")
         # temp_df = None
@@ -48,7 +48,7 @@ class ThinkstepIntegration:
         # self.__scaling_matrix_B()
         # self.__read_process_flows_excel()
 
-        self.__update_matrix_A_and_Z()
+        # self.__update_matrix_A_and_Z()
 
     def create_exchanges_df(self):
         parse_obj = ParseProcessExchanges(files_path.PROCESS_FILES_SOURCE_DIR)
