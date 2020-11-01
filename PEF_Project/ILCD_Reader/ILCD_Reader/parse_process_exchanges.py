@@ -38,7 +38,6 @@ class ParseProcessExchanges:
         """
         process_rows = []
         elements_list = []
-        parsed_file = None
         self.__create_name_list()
         last_file = self.files[-1]
         print(last_file)
@@ -50,17 +49,11 @@ class ParseProcessExchanges:
                 process_rows = []
                 self.count = 0
             if file == last_file:
-                self.__create_df(process_rows)
-                process_rows = []
-                parsed_file = self.__open_xml_file(file)
-                file_name = file.split("\\")[-1]
-                elements_list = self.__read_elements(parsed_file.root, file_name)
+                elements_list = self.__preparing_file_to_be_read(file)
                 process_rows.extend(elements_list)
                 self.__create_df(process_rows)
 
-            parsed_file = self.__open_xml_file(file)
-            file_name = file.split("\\")[-1]
-            elements_list = self.__read_elements(parsed_file.root, file_name)
+            elements_list = self.__preparing_file_to_be_read(file)
             process_rows.extend(elements_list)
             self.count = self.count + 1
 
@@ -72,6 +65,12 @@ class ParseProcessExchanges:
         except IOError as error:
             print(f"Couldnt process {file}, {error}")
         return parsed_file
+
+    def __preparing_file_to_be_read(self, file):
+        parsed_file = self.__open_xml_file(file)
+        file_name = file.split("\\")[-1]
+        elements_list = self.__read_elements(parsed_file.root, file_name)
+        return elements_list
 
     def __read_elements(self, root, file_name):
         """[summary]

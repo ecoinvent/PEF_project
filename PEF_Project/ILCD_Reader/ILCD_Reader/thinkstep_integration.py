@@ -31,6 +31,7 @@ class ThinkstepIntegration:
         # null_df = second_merged_df[second_merged_df['index'].isnull()]
         # null_df.drop_duplicates(subset=["exchange name", "compartment", "subcompartment"], keep='first', inplace=True)
         # print("nulling again", second_merged_df['index'].isnull().sum())
+        # print("index max", second_merged_df["index"].max())
         # self.__write_to_Excel(null_df, "D:\\ecoinvent_scripts\\output\\merged\\checking")
         # self.__write_to_csv(second_merged_df, "D:\\ecoinvent_scripts\\output\\merged")
 
