@@ -4,7 +4,7 @@ import numpy as np
 from LCIA_score_calculation import calculate_scalings, calculate_g, calculate_h
 from util.file_utils import load_pkl_file
 import pickle
-
+import files_path
 
 class Score2Template:
 
@@ -78,13 +78,10 @@ class Score2Template:
 
         directory_list = [scaling_folder, lci_folder, lcia_folder]
         self.check_path_exist(directory_list)
-        print("b", matrix_B_data.shape)
-        print("c", matrix_C_data.shape)
-
-        # calculate_scalings(indexes_data, matrix_A_data, matrix_Z_data, scaling_folder, dataset_to_iterate)
-        # calculate_g(
-        #     scaling_folder, indexes_data, matrix_B_data, lci_folder, dataset_to_iterate
-        # )
+        calculate_scalings(indexes_data, matrix_A_data, matrix_Z_data, scaling_folder, dataset_to_iterate)
+        calculate_g(
+            scaling_folder, indexes_data, matrix_B_data, lci_folder, dataset_to_iterate
+        )
         calculate_h(
             lci_folder, indexes_data, matrix_C_data, lcia_folder, dataset_to_iterate
         )
@@ -112,7 +109,8 @@ class Score2Template:
         df1["unitName"] = dataset_list_df["unitName"]
         df2 = pd.DataFrame(arr, columns=df2_columns)
         concatenated_df = pd.concat([df1, df2], axis=1)
-        concatenated_df.to_excel("LCIAcalc.xlsx", index=False)
+        output_file = os.path.join(files_path.EXCEL_DESTINATION_DIRECTORY, "LCIAcalc.xlsx")
+        concatenated_df.to_excel(output_file, index=False)
 
     def create_df_columns_names(self):
         """[creating column names by reading each row in LCIA dataframe and apply formatting on every row and then
@@ -137,9 +135,7 @@ class Score2Template:
         Returns:
             [pd.Dataframe]: [datafrme of dataset list excel file]
         """
-        datalist_df = pd.read_excel(
-            r"D:\ecoinvent_scripts\PEF_Project\ILCD_Reader\Data\input\excel\dataset list.xlsx"
-        )
+        datalist_df = pd.read_excel(files_path.DATASET_LIST)
         return datalist_df
 
     def read_toggle_dictionary(self, datalist_indexes):

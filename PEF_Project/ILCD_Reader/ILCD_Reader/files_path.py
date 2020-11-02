@@ -1,9 +1,9 @@
 
 import os
 
-# BASE_DIR => \ecoinvent_scripts\PEF_Project\ILCD_Reader
+# BASE_DIR => \ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+print(BASE_DIR)
 UPDATE_AMOUNTS_FOR_WATER_RESOURCES = os.path.join(BASE_DIR, "Data", "input", "excel, updated amounts for correction_MatrixZ.xlsx")
 INDEXES_PEF_ALLOCATION = os.path.join(BASE_DIR, "Data", "input", "excel", "indexes.xlsx")
 INDEXES_WATERBALANCE_CORRECTION = os.path.join(BASE_DIR, "Data", "input", "excel", "indexes_with_new_ie.xlsx")
@@ -22,3 +22,4 @@ PROCESS_FILES_Destination_DIR = os.path.join(BASE_DIR, "Data", "output", "proces
 DATASET_LIST_FLOWCHANGES = os.path.join(BASE_DIR, "Data", "input", "excel", "datasetList_flowChange.xlsx")
 MAPPED_EXCHANGES = os.path.join(BASE_DIR, "Data", "input", "excel", "TSexchangesToBeMapped_spec.xlsx")
 PILOT_THINKSTEP = os.path.join(BASE_DIR, "Data", "input", "excel", "PilotThinkstepDataUsed_spec.xlsx")
+DATASET_LIST = os.path.join(BASE_DIR, "Data", "input", "excel", "dataset list.xlsx")

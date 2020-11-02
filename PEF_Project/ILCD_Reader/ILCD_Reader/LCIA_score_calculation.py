@@ -80,11 +80,9 @@ def calculate_g(scaling_folder, indexes, B, LCI_folder, to_iterate=[]):
 def calculate_h(LCI_folder, indexes, C, LCIA_folder, to_iterate=[]):
     if len(to_iterate) == 0:
         to_iterate = indexes.ie
-    print("c shape", C.shape)
     for ie in pyprind.prog_bar(to_iterate, title='calculating LCIA for %s datasets' % len(to_iterate)):
         ie_number = indexes.toggle['ie'][ie]
         g = pkl_load(LCI_folder, str(ie_number))
-        print("g shape", g.shape)
         try:
             h = C*g
         except ValueError:
