@@ -14,7 +14,7 @@ class ThinkstepIntegration:
         self.files = []
 
     def start_processing(self):
-        self.create_exchanges_df()
+        # self.create_exchanges_df()
         # mapped_exchanges_df = self.__read_mapping_template()
         # index_pef_ee = self.__read_index_PEF("ee")
         # temp_df = None
@@ -46,7 +46,7 @@ class ThinkstepIntegration:
 
         # self.__update_matrix_B()
         # self.__update_matrix_B_with_resultiAmount()
-        # self.__scaling_matrix_B()
+        self.__scaling_matrix_B()
         # self.__read_process_flows_excel()
 
         # self.__update_matrix_A_and_Z()
@@ -208,7 +208,7 @@ class ThinkstepIntegration:
         print(coo_matrix.shape)
         csc_matrix = coo_matrix.tocsc()
         print("csc", csc_matrix.shape)
-        self.__write_csc_matrix_2Pickle("tryingB", csc_matrix)
+        self.__write_csc_matrix_2Pickle("issueresolvedB", csc_matrix)
         # B_matrix_array = B.todense()
         # count = 0
         # print(len(B_coordinates_list))
@@ -277,11 +277,11 @@ class ThinkstepIntegration:
         return merged_processFlows_pilot_df
 
     def __divide_matrix_B_columns(self, df):
-        csc_MatrixB = load_pkl_file(r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\output\pickles\newwB.pkl")
+        csc_MatrixB = load_pkl_file(r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\output\pickles\issueresolvedB.pkl")
 
         for i, row in df.iterrows():
             csc_MatrixB[:, row["matrix ie index"]] = csc_MatrixB[:, row["matrix ie index"]] / row["resultingAmount"]
-        self.__write_csc_matrix_2Pickle("latestB", csc_MatrixB)
+        self.__write_csc_matrix_2Pickle("newofnewB", csc_MatrixB)
 
 
     def __update_matrix_A_and_Z(self):
