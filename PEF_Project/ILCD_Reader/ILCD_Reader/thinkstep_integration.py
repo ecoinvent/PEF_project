@@ -283,7 +283,6 @@ class ThinkstepIntegration:
             csc_MatrixB[:, row["matrix ie index"]] = csc_MatrixB[:, row["matrix ie index"]] / row["resultingAmount"]
         self.__write_csc_matrix_2Pickle("newofnewB", csc_MatrixB)
 
-
     def __update_matrix_A_and_Z(self):
         pilot_thinkstep_df = self.__read_pilot_thinkstep_template("1 to many")
         # df = pd.read_excel(r"PilotThinkstepDataUsed_spec.xlsx", skiprows=[0])

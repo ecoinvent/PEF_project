@@ -6,6 +6,7 @@ from util.file_utils import load_pkl_file
 import pickle
 import files_path
 
+
 class Score2Template:
 
     matrix_A = "A.pkl"

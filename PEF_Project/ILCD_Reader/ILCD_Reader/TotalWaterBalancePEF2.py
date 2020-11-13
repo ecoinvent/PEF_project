@@ -1,11 +1,12 @@
-# from DetailWaterBalance import DetailWaterBalance
 from detail_water_balance_PEF2 import DetailWaterBalancePEF2
 import numpy as np
 import pandas as pd
+from util import file_utils
+import files_path
 
 
-class TotalWaterBalance:
-    def __init__(self, pickles_source_dir, excels_source_dir, output_dir):
+class TotalWaterBalancePEF2:
+    def __init__(self):
         """[initialize directories path]
 
         Args:
@@ -13,20 +14,29 @@ class TotalWaterBalance:
             excels_source_dir ([str]): [description]
             output_dir ([str]): [description]
         """
-        self.pickles_source_dir = pickles_source_dir
-        self.excels_source_dir = excels_source_dir
-        self.output_dir = output_dir
-
         self.generate_DWB()
+
+    def get_matrix_A_diag(self):
+        csc_matrix = file_utils.load_pkl_file(files_path.MATRIX_A_PICKLE)
+        matrix_diagonal = csc_matrix.diagonal()
+        diag_list = matrix_diagonal.tolist()
+        df_A = pd.DataFrame(diag_list, columns=["reference product amount"])
+        return df_A
+
+    def load_indexes(self):
+        df_indexes_ie = pd.read_excel(files_path.INDEXES_PEF_ALLOCATION, sheet_name="ie")
+        return df_indexes_ie
+
+    def concat_indexes_A_diag(self):
+        df_A_diag = self.get_matrix_A_diag()
+        df_indexes_ie = self.load_indexes()
+        concatenated_dataframe = pd.concat([df_indexes_ie, df_A_diag], axis=1)
+        return concatenated_dataframe
 
     def generate_DWB(self):
         """[Generate detail water balance dataframe]
         """
-        # DWB_Obj = DetailWaterBalance(
-        #     self.pickles_source_dir, self.excels_source_dir, self.output_dir,
-        # )
-        DWB_Obj = DetailWaterBalancePEF2(
-            self.pickles_source_dir, self.excels_source_dir)
+        DWB_Obj = DetailWaterBalancePEF2()
         self.DWB_df = DWB_Obj.generate_DWB_df()
         self.__apply_replacement()
 
@@ -39,7 +49,7 @@ class TotalWaterBalance:
     def __generate_pivot_table(self):
         """[generate pivot table out of the dataframe]
         """
-        self.pivotTable = pd.pivot_table(
+        pivotTable = pd.pivot_table(
             self.DWB_df,
             values="contribution to water balance",
             index=["activityName", "geography", "reference product"],
@@ -47,8 +57,18 @@ class TotalWaterBalance:
             aggfunc=np.sum,
             fill_value=0,
         )
-        self.pivotTable["water balance"] = self.pivotTable.apply(
+        pivotTable["water balance"] = pivotTable.apply(
             lambda row: row["water in"] + row["water out"], axis=1
+        )
+
+        concatenated_df = self.concat_indexes_A_diag()
+
+        self.merged_df = pd.merge(
+            concatenated_df,
+            pivotTable,
+            left_on=["activityName", "geography", "product"],
+            right_on=["activityName", "geography", "reference product"],
+            how="inner",
         )
         self.__create_ratio_column()
 
@@ -73,18 +93,18 @@ class TotalWaterBalance:
         """[introduce two new columns to the dataframe by dividing the water
            balance over water in and water balance over water out]
         """
-        self.pivotTable["water balance/water in"] = self.pivotTable.apply(
+        self.merged_df["water balance/water in"] = self.merged_df.apply(
             lambda row: self.__divide(row["water balance"], row["water in"]), axis=1
         )
-        self.pivotTable["water balance/water out"] = self.pivotTable.apply(
+        self.merged_df["water balance/water out"] = self.merged_df.apply(
             lambda row: self.__divide(row["water balance"], row["water out"]), axis=1
         )
         self.__save2Excel()
 
     def __save2Excel(self):
-        self.pivotTable.reset_index(inplace=True)
+        self.merged_df.reset_index(inplace=True)
         try:
-            self.pivotTable.to_excel(
+            self.merged_df.to_excel(
                 r"D:\ecoinvent_scripts\Total water balance.xlsx", index=False
             )
         except ValueError as err:
@@ -92,10 +112,7 @@ class TotalWaterBalance:
 
 
 def main():
-    TotalWaterBalance(
-        r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\input\pickles\inputs_water_calc",
-        r"D:\ecoinvent_scripts\PEF_Project\ILCD_Reader\Data\input\excel"
-    )
+    TotalWaterBalancePEF2()
 
 
 if __name__ == "__main__":

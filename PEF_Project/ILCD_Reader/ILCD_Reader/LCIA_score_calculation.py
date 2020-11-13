@@ -83,8 +83,6 @@ def calculate_h(LCI_folder, indexes, C, LCIA_folder, to_iterate=[]):
     for ie in pyprind.prog_bar(to_iterate, title='calculating LCIA for %s datasets' % len(to_iterate)):
         ie_number = indexes.toggle['ie'][ie]
         g = pkl_load(LCI_folder, str(ie_number))
-        print(C.shape)
-        print(g.shape)
         try:
             h = C*g
         except ValueError:

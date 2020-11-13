@@ -3,19 +3,17 @@ from util.file_utils import load_pkl_file
 from tqdm import tqdm
 import os
 import sys
+import files_path
 
 
-class DetailWaterBalance:
-    def __init__(self, source_dir_pklFiles, source_dir_excelFiles, destination_dir):
+class DetailWaterBalancePEF2:
+    def __init__(self):
         """[initialize instance variables with source_directory and destination directory]
 
         Args:
             source_dir_pklFiles ([type]): [file path to source directory]
             destination_dir ([type]): [file path to destination directory]
         """
-        self.source_dir_pklFiles = source_dir_pklFiles
-        self.source_dir_excelFiles = source_dir_excelFiles
-        self.destination_dir = destination_dir
         self.matrix_A_data, self.matrix_B_data = None, None
         self.wb = None
         self.my_dataframes_dict = None
@@ -27,7 +25,7 @@ class DetailWaterBalance:
             [type]: [description]
         """
         print("Reading_merged_matrix_A...")
-        matA_df = load_pkl_file(self.source_dir_pklFiles, 'MergedmatrixA.pkl')
+        matA_df = load_pkl_file(files_path.PICKLES_SOURCE_DIRECTORY, 'MergedmatrixA.pkl')
         print("Create direction and data columns...")
         matA_df["direction"] = matA_df["data"].apply(lambda x: -1 if x >= 0 else 1)
         matA_df["data"] = matA_df["data"].abs()
@@ -40,20 +38,19 @@ class DetailWaterBalance:
             [type]: [description]
         """
         print("Reading_merged_matrix_B...")
-        matB_df = load_pkl_file(self.source_dir_pklFiles, "MergedmatrixB.pkl")
+        matB_df = load_pkl_file(files_path.PICKLES_SOURCE_DIRECTORY, "MergedmatrixB.pkl")
         print("Create direction column...")
         matB_df["direction"] = matB_df["compartment"].apply(
             lambda x: -1 if "Emissions" in str(x) else (1 if "Resources" in str(x) else None)
         )
         return matB_df
 
-    def read_water_balance_template(self):
+    def read_water_in_wet_mass(self):
         """[summary]
         """
         print("Reading index water balance...")
-        index_water_balance_file = os.path.join(self.source_dir_excelFiles, "indexes_PEF-phase 2-start_Allocation, cut-off.xlsx")
         try:
-            self.wb = pd.read_excel(index_water_balance_file, sheet_name=None)
+            self.wb = pd.read_excel(files_path.WATER_IN_WET_MASS, sheet_name=None)
         except FileNotFoundError:
             print("indexes water balance not found")
             sys.exit()
@@ -66,14 +63,14 @@ class DetailWaterBalance:
     def read_dataset_list_water(self):
         """[summary]
         """
-        dataset_list_file = os.path.join(self.source_dir_excelFiles, "datasetList_flowChange.xlsx")
         try:
-            self.dataset_df = pd.read_excel(dataset_list_file)
+            self.dataset_df = pd.read_excel(files_path.DATASET_LIST_WATER)
         except FileNotFoundError:
             print("dataset list water not found")
             sys.exit()
 
-    def fetch_column_names(self, exchange):
+    @staticmethod
+    def fetch_column_names(exchange):
         """[summary]
 
         Args:
@@ -109,9 +106,9 @@ class DetailWaterBalance:
         Returns:
             [type]: [description]
         """
-        mat_df = func()
+        matrix_df = func()
         merged_df = pd.merge(
-            mat_df,
+            matrix_df,
             self.wb[exchange],
             left_on=left_cols,
             right_on=right_cols,
@@ -119,7 +116,8 @@ class DetailWaterBalance:
         )
         return merged_df
 
-    def modify_dataframe(self, merged_df3):
+    @staticmethod
+    def modify_dataframe(merged_df3):
         """[summary]
 
         Args:
@@ -142,6 +140,14 @@ class DetailWaterBalance:
             axis=1,
             inplace=True,
         )
+
+        # merged_df3["direction"] = merged_df3["direction"].astype(float)
+        # merged_df3["exchange amount"] = merged_df3["exchange amount"].astype(float)
+
+        # merged_df3["water in wet mass"] = merged_df3["water in wet mass"].astype(str)
+        # merged_df3["water in wet mass"] = merged_df3["water in wet mass"].str.replace(',','')
+        # merged_df3["water in wet mass"] = merged_df3["water in wet mass"].apply(lambda x: float(x.split()[0].replace(',', '')))
+        # merged_df3["water in wet mass"] = merged_df3["water in wet mass"].astype(str).astype(float)
 
         merged_df3["contribution to water balance"] = merged_df3.apply(
             lambda row: row["direction"]
@@ -194,7 +200,7 @@ class DetailWaterBalance:
         my_list = ["ie", "ee"]
         my_func = [self.load_A_df, self.load_B_df]
         my_dict = {}
-        self.read_water_balance_template()
+        self.read_water_in_wet_mass()
 
         for exchange, func in zip(my_list, my_func):
             exchange = exchange
@@ -229,6 +235,27 @@ class DetailWaterBalance:
             dataset: merged_df3.loc[merged_df3["Dataset_type"] == dataset]
             for dataset in Dataset_type_list
         }
+        Ts_el_df = self.my_dataframes_dict.pop("TS el")
+        eiv_df = self.my_dataframes_dict.pop("eiv3.3")
+        TS_other_df = self.my_dataframes_dict.pop("TS other")
+
+        Ts_el_df1 = Ts_el_df.iloc[:500000, :]
+        Ts_el_df2 = Ts_el_df.iloc[500000:, :]
+        eiv_df_df1 = eiv_df.iloc[:500000, :]
+        eiv_df_df2 = eiv_df.iloc[500000:900000, :]
+        eiv_df_df3 = eiv_df.iloc[900000:, :]
+        TS_other_df1 = TS_other_df.iloc[:500000, :]
+        TS_other_df2 = TS_other_df.iloc[500000:, :]
+
+        Ts_el_dicitonary = {"Ts_el_firstHalf": Ts_el_df1, "Ts_el_secondHalf": Ts_el_df2}
+        eiv_dicitonary = {"eiv3.3_firstHalf": eiv_df_df1, "eiv3.3_secondHalf": eiv_df_df2, "eiv3.3_thirdHalf": eiv_df_df3}
+        Ts_other_dicitonary = {"Ts_other_firstHalf": TS_other_df1, "Ts_other_secondHalf": TS_other_df2}
+
+        self.my_dataframes_dict = {**self.my_dataframes_dict,
+                                   **Ts_el_dicitonary,
+                                   **eiv_dicitonary,
+                                   **Ts_other_dicitonary
+                                   }
         self.save2Excel()
 
     def save2Excel(self):
@@ -236,8 +263,11 @@ class DetailWaterBalance:
         """
         df_shape_list = []
         print("Writing Dataframes to Excel in process...")
-        writer = pd.ExcelWriter(r"D:\ecoinvent_scripts\Detailed Water Balance.xlsx", engine="xlsxwriter")
+        target_file_name = os.path.join(files_path.EXCEL_DESTINATION_DIRECTORY, "Detailed Water Balance.xlsx")
+        writer = pd.ExcelWriter(target_file_name, engine="xlsxwriter")
         for key in tqdm(self.my_dataframes_dict):
+            print("sheetname", key)
+            print("sheetsize", self.my_dataframes_dict[key].shape)
             df_shape_list.append(self.my_dataframes_dict[key].shape)
             self.my_dataframes_dict[key].to_excel(writer, sheet_name=key, index=False)
 
@@ -254,9 +284,6 @@ class DetailWaterBalance:
         writer.save()
 
 
-obj = DetailWaterBalance(
-    r"D:\ecoinvent_scripts\PEF_Project\ILCD_Reader\Data\input\pickles",
-    r"D:\ecoinvent_scripts\PEF_Project\ILCD_Reader\Data\input\excel",
-    r"D:\ecoinvent_scripts",
-)
-obj.generate_DWB_template()
+if __name__ == "__main__":
+    obj = DetailWaterBalancePEF2()
+    obj.generate_DWB_template()

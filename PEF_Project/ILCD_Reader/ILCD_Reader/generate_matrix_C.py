@@ -109,6 +109,7 @@ class GenerateMatrixC:
     def __dump_to_pickle(self):
         """store the csc sparse matrix to pickle file
         """
+        print("shape", self.csc_matrix.shape)
         with open("D:\\ecoinvent_scripts\\C.pkl", "wb") as outfile:
             pickle.dump(self.csc_matrix, outfile, pickle.HIGHEST_PROTOCOL)
 

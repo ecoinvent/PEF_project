@@ -5,16 +5,12 @@ from tqdm import tqdm
 import pickle
 import sys
 import files_path
-import os
+
 
 # Generate Matrix Exhanges
 
 
 class MatrixExchanges:
-
-    def __init__(self):
-        pass
-
     def convert_matrix_to_df(self, folder_path, matrix_name):
         pickled_matrix = load_pkl_file(folder_path, matrix_name)
         if type(pickled_matrix) == scipy.sparse.csc.csc_matrix:
@@ -211,26 +207,17 @@ class MatrixExchanges:
 
     def dataframe_to_excel(self, folder_path, file_name):
         df = self.input_matrix_names(folder_path, file_name)
-        print(df.columns)
         # df.sort_values(['indicator', 'exchange name', 'compartment', 'subcompartment'], inplace=True)
 
-        with open("MergedMatrixB.pkl", "wb") as outfile:
+        with open("MergedMatrix.pkl", "wb") as outfile:
             pickle.dump(df, outfile, pickle.HIGHEST_PROTOCOL)
-
-        with pd.ExcelWriter(os.path.join(folder_path, 'MatrixExchange.xlsx')) as writer:
-            try:
-                df.to_excel(writer, sheet_name="Sheet 1", index=False)
-            except ValueError as error:
-                print(error)
-
-        # df.to_excel(r"D:\ecoinvent_scripts\MergedmatrixAnew.xlsx")
 
 
 if __name__ == "__main__":
     folder_path = files_path.PICKLES_SOURCE_DIRECTORY
     file_name = "indexes.xlsx"
     user_input = input(
-        "Choose option (1) for customized excel or (2) for generating excel with one sheet "
+        "Choose option (1) Generating matrix exchanges excel or (2) Generating merged matrix with indexes "
     )
     print(user_input)
     obj = MatrixExchanges()
