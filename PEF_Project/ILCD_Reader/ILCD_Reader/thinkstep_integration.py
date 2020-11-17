@@ -46,10 +46,10 @@ class ThinkstepIntegration:
 
         # self.__update_matrix_B()
         # self.__update_matrix_B_with_resultiAmount()
-        self.__scaling_matrix_B()
+        # self.__scaling_matrix_B()
         # self.__read_process_flows_excel()
 
-        # self.__update_matrix_A_and_Z()
+        self.__update_matrix_A_and_Z()
 
     def create_exchanges_df(self):
         parse_obj = ParseProcessExchanges(files_path.PROCESS_FILES_SOURCE_DIR)
@@ -292,13 +292,13 @@ class ThinkstepIntegration:
             y = int(row['process ie index'])
             v = row["share"]
             A[x, y] = v
-        self.__write_csc_matrix_2Pickle("newA", A)
+        self.__write_csc_matrix_2Pickle("anotherA", A)
         self.__update_matrix_Z(A)
 
     def __update_matrix_Z(self, A):
         Z = -A
         Z.setdiag(0)
-        self.__write_csc_matrix_2Pickle("newZ", Z)
+        self.__write_csc_matrix_2Pickle("anotherZ", Z)
 
     def __write_csc_matrix_2Pickle(self, matrix_name, csc_matrix):
         dump_to_pickle(matrix_name, csc_matrix)

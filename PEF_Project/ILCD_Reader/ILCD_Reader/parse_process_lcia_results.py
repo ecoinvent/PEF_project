@@ -117,7 +117,7 @@ class ParseProcessLCIAResults:
         return elements_dict
 
     def __reading_pilot_LCIA_scores(self):
-        df = pd.read_excel(r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\input\excel\eiPilot_fromNode_LCIAscores.xlsx")
+        df = pd.read_excel(r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\input\excel\LCIAscores_thinkstepPilotvsTransition.xlsx", sheet_name="transition")
         li = df.columns.tolist()
         for i in li:
             if not i.startswith("Unnamed"):
@@ -134,13 +134,17 @@ class ParseProcessLCIAResults:
             [type]: [description]
         """
         lcia_results_dict = {}
-        for result in root.LCIAResults.getchildren():
-            if result.referenceToLCIAMethodDataSet.attrib["refObjectId"] in self.numbers_list:
-                dict_key = getattr(result.referenceToLCIAMethodDataSet,
-                                   f"{ParseProcessLCIAResults.common}shortDescription",
-                                   )
-                lcia_results_dict[dict_key] = result["meanAmount"]
-        return lcia_results_dict
+        if getattr(root, "LCIAResults", "") != "":
+            for result in root.LCIAResults.getchildren():
+                if result.referenceToLCIAMethodDataSet.attrib["refObjectId"] in self.numbers_list:
+                    dict_key = getattr(result.referenceToLCIAMethodDataSet,
+                                       f"{ParseProcessLCIAResults.common}shortDescription",
+                                       )
+                    lcia_results_dict[dict_key] = result["meanAmount"]
+            return lcia_results_dict
+        else:
+            print(getattr(root.processInformation.dataSetInformation.name, "baseName", ""))
+            return lcia_results_dict
 
     def _create_df(self, meta_rows):
         """[summary]
@@ -150,9 +154,9 @@ class ParseProcessLCIAResults:
             exchanges_rows ([type]): [description]
         """
         meta_df = pd.DataFrame(meta_rows)
-        write_df_to_excel(files_path.EXCEL_DESTINATION_DIRECTORY, "process_xml_lcia_to_excel.xlsx", meta_df)
+        write_df_to_excel(files_path.EXCEL_DESTINATION_DIRECTORY, "Transition_process_xml_to_excel.xlsx", meta_df)
 
 
 obj = ParseProcessLCIAResults(
-        r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\input\EF2_0_Chemicals\processes"
+        r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\input\EF3_0_official_data_energy_transport_packaging_EoL\processes"
     )
