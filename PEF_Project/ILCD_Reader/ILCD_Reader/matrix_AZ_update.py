@@ -24,23 +24,38 @@ class MatrixAZUpdate(MatrixUpdate):
             self.index_pef_df["ie"],
             how="inner",
             left_on=[
-                "exchange name",
                 "activityLink_activityName",
                 "activityLink_geography",
+                "exchange name",
             ],
-            right_on=["product", "activityName", "geography"],
+            right_on=["activityName", "geography", "product"],
         )
+        print(self.merged_updatedAmount_index_df.columns)
+        self.final_merged_index_df = pd.merge(
+            self.merged_updatedAmount_index_df,
+            self.index_pef_df["ie"],
+            how="inner",
+            left_on=[
+                "wb_activityName",
+                "wb_geography",
+                "wb_reference product",
+            ],
+            right_on=["activityName", "geography", "product"],
+        )
+
+        # self.final_merged_index_df.to_excel(r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\A_merges.xlsx")
 
     def _Replace_Matrix_Elements(self):
         """[summary]
         """
-        index_array = self.merged_updatedAmount_index_df["index"].to_numpy()
-        newvalues_array = self.merged_updatedAmount_index_df[
+        row_array = self.final_merged_index_df["index_x"].to_numpy()
+        column_array = self.final_merged_index_df["index_y"].to_numpy()
+        newvalues_array = self.final_merged_index_df[
             "new exchange amount"
         ].to_numpy()
         count = 0
-        for idx, new_value in zip(index_array, newvalues_array):
-            self.csc_Matrix_data[idx, idx] = new_value
+        for row_idx, column_idx, new_value in zip(row_array, column_array, newvalues_array):
+            self.csc_Matrix_data[row_idx, column_idx] = new_value
             count = count + 1
         print("Values Updated in Matrix", count)
 

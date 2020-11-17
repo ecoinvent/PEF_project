@@ -37,7 +37,8 @@ class MatrixUpdate:
                 files_path.WATER_AMOUNT_AND_UNIT_CORRECTION, "r"
             ):
                 pass
-        except FileNotFoundError:
+        except FileNotFoundError as err:
+            print(err)
             print("Please make sure you supplied the correct filepaths and filenames")
             sys.exit(1)
 
@@ -45,6 +46,7 @@ class MatrixUpdate:
         self.updated_resources_df = pd.read_excel(
             files_path.UPDATE_AMOUNTS_FOR_WATER_RESOURCES
         )
+        self.updated_resources_df.rename(columns={'activityName': 'wb_activityName', 'geography': 'wb_geography', 'reference product':'wb_reference product'}, inplace = True)
         if self.matrix == 'A':
             self.multiply_column_by_negative_one()
 
