@@ -1,6 +1,8 @@
-/output
-/PEF_Project/ILCD_Reader/Data
-*.ipynb
+.vscode
 *.pyc
-*.pkl
+__pycache__/
+*.ipynb
 *.xlsx
+*.xml
+*.xls
+Data/

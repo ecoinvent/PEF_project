@@ -90,6 +90,8 @@ class GenerateSourceFiles:
                                     .publicationAndOwnership
                                     [f"{GenerateSourceFiles.common}dataSetVersion"]
                                     )
+            parent = self.root.administrativeInformation.publicationAndOwnership[f"{GenerateSourceFiles.common}permanentDataSetURI"].getparent()
+            parent.remove(self.root.administrativeInformation.publicationAndOwnership[f"{GenerateSourceFiles.common}permanentDataSetURI"])
         except AttributeError as error:
             print(f"Error Occured in {self.file_path}", error)
         except ValueError as error:
@@ -101,7 +103,7 @@ class GenerateSourceFiles:
         self.shortname._setText(shortname)
         self.source_citation._setText(source_citation)
         self.timestamp._setText(datetime.now().astimezone().isoformat())
-        self.dataset_version._setText(dataset_version)
+        self.dataset_version._setText("35.00.000")
 
     def _save_modified_xml(self, file_uuid):
         """[summary]
@@ -121,8 +123,8 @@ class GenerateSourceFiles:
 
 obj = GenerateSourceFiles(
     r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\input\excel\sourceFiles.xlsx",
-    r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\input\ILCD_EFtransition_ecoinvent_20200904\sources\000d9f94-6551-4858-a898-e68a5546e166.xml",
-    r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\output\source_files"
+    r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\input\ILCD_EFtransition_ecoinvent_20200904\sources\0d388ade-52ab-4ca6-8a9b-f06df45d880c.xml",
+    r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\output\source_files1"
 )
 
 obj.generated_sources()

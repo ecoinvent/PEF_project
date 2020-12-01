@@ -5,7 +5,7 @@ from tqdm import tqdm
 import pickle
 import sys
 import files_path
-
+import time
 
 # Generate Matrix Exhanges
 
@@ -175,20 +175,30 @@ class MatrixExchanges:
             dataset: merged_df3.loc[merged_df3["Dataset_type"] == dataset, :].copy()
             for dataset in dataset_type_list
         }
+        for k, v in dataframes_dict.items():
+            print(k, v.shape)
+
+        eiv_df = dataframes_dict.pop("eiv3.3")
         Ts_other_df = dataframes_dict.pop("TS other")
         Ts_el_df = dataframes_dict.pop("TS el")
+        eiv_df1 = eiv_df.iloc[:500000, :]
+        eiv_df2 = eiv_df.iloc[500000:1000000, :]
+        eiv_df3 = eiv_df.iloc[1000000:, :]
         Ts_other_df1 = Ts_other_df.iloc[:500000, :]
         Ts_other_df2 = Ts_other_df.iloc[500000:, :]
         Ts_el_df1 = Ts_el_df.iloc[:500000, :]
         Ts_el_df2 = Ts_el_df.iloc[500000:, :]
 
+        eiv_dicitonary = {"eiv_firstHalf": eiv_df1, "eiv_secondHalf": eiv_df2, "eiv_thirdHalf": eiv_df3}
         Ts_other_dicitonary = {"Ts_other_firstHalf": Ts_other_df1, "Ts_other_secondHalf": Ts_other_df2}
         Ts_el_dicitonary = {"Ts_el_firstHalf": Ts_el_df1, "Ts_el_secondHalf": Ts_el_df2}
-        dataframes_dict = {**dataframes_dict, **Ts_other_dicitonary, **Ts_el_dicitonary}
+        dataframes_dict = {**dataframes_dict, **eiv_dicitonary, **Ts_other_dicitonary, **Ts_el_dicitonary}
         df_shapes_list = []
+        s = time.time()
         writer = pd.ExcelWriter(
-            r"D:\ecoinvent_scripts\Matrix Exchanges.xlsx", engine="xlsxwriter"
+            r"D:\ecoinvent_scripts\Matrix_Exchanges.xlsx", engine="xlsxwriter"
         )
+
         print("Starting the writing process...")
         for key in tqdm(dataframes_dict):
             df_shapes_list.append(dataframes_dict[key].shape)
@@ -203,6 +213,8 @@ class MatrixExchanges:
         print()
         print("Saving Excel File in process...")
         writer.save()
+        e = time.time()
+        print("Pandas Loading Time = {}".format(e-s))
         # """Applying filtering on dataframe to divide into different sheets"""
 
     def dataframe_to_excel(self, folder_path, file_name):

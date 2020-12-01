@@ -4,6 +4,7 @@ from tqdm import tqdm
 import os
 import sys
 import files_path
+import time
 
 
 class DetailWaterBalancePEF2:
@@ -263,7 +264,8 @@ class DetailWaterBalancePEF2:
         """
         df_shape_list = []
         print("Writing Dataframes to Excel in process...")
-        target_file_name = os.path.join(files_path.EXCEL_DESTINATION_DIRECTORY, "Detailed Water Balance.xlsx")
+        target_file_name = os.path.join(files_path.EXCEL_DESTINATION_DIRECTORY, "Detailed Water Balance_test_todelete.xlsx")
+        s = time.time()
         writer = pd.ExcelWriter(target_file_name, engine="xlsxwriter")
         for key in tqdm(self.my_dataframes_dict):
             print("sheetname", key)
@@ -282,6 +284,8 @@ class DetailWaterBalancePEF2:
         print()
         print("Saving Excel File in process...")
         writer.save()
+        e = time.time()
+        print("Pandas Loading Time = {}".format(e-s))
 
 
 if __name__ == "__main__":

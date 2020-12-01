@@ -279,7 +279,7 @@ class ThinkstepIntegration:
     def __divide_matrix_B_columns(self, df):
         csc_MatrixB = load_pkl_file(r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\output\pickles\issueresolvedB.pkl")
 
-        for i, row in df.iterrows():
+        for _, row in df.iterrows():
             csc_MatrixB[:, row["matrix ie index"]] = csc_MatrixB[:, row["matrix ie index"]] / row["resultingAmount"]
         self.__write_csc_matrix_2Pickle("newofnewB", csc_MatrixB)
 

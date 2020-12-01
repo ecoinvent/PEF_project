@@ -102,7 +102,7 @@ class AddingFlowProperties:
             "referenceToFlowPropertyDataSet",
             attrib={
                     "refObjectId": "7ec8d70e-4ffc-4024-86b7-6141cc0a2bf5",
-                    "version": "03.00.002",
+                    "version": "03.00.003",
                     "type": "flow property data set",
                     "uri": "../flowproperties/7ec8d70e-4ffc-4024-86b7-6141cc0a2bf5.xml"
                     }
@@ -135,7 +135,7 @@ class AddingFlowProperties:
             "referenceToFlowPropertyDataSet",
             attrib={
                     "refObjectId": "62e503ce-544a-4599-b2ad-bcea15a7bf20",
-                    "version": "03.00.000",
+                    "version": "03.00.003",
                     "type": "flow property data set",
                     "uri": "../flowproperties/62e503ce-544a-4599-b2ad-bcea15a7bf20.xml"
                     }

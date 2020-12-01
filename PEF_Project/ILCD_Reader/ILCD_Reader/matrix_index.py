@@ -1,6 +1,5 @@
 import pandas as pd
 import files_path
-import pickle
 
 
 class MatrixIndex:

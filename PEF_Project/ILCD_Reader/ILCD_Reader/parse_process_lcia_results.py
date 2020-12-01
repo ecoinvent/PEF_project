@@ -117,7 +117,7 @@ class ParseProcessLCIAResults:
         return elements_dict
 
     def __reading_pilot_LCIA_scores(self):
-        df = pd.read_excel(r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\input\excel\LCIAscores_thinkstepPilotvsTransition.xlsx", sheet_name="transition")
+        df = pd.read_excel(r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\input\excel\LCIAscores_thinkstepPilotvsTransition.xlsx", sheet_name="pilot")
         li = df.columns.tolist()
         for i in li:
             if not i.startswith("Unnamed"):
@@ -154,9 +154,9 @@ class ParseProcessLCIAResults:
             exchanges_rows ([type]): [description]
         """
         meta_df = pd.DataFrame(meta_rows)
-        write_df_to_excel(files_path.EXCEL_DESTINATION_DIRECTORY, "Transition_process_xml_to_excel.xlsx", meta_df)
+        write_df_to_excel(files_path.EXCEL_DESTINATION_DIRECTORY, "Pilot_process_xml_to_excel.xlsx", meta_df)
 
 
 obj = ParseProcessLCIAResults(
-        r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\input\EF3_0_official_data_energy_transport_packaging_EoL\processes"
+        r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\input\EF_20_official_data\processes"
     )
