@@ -113,19 +113,28 @@ def save_xml_file(xml_file=None, target_dir=None, file_name=None):
         return
 
     if(all([xml_file, target_dir, file_name])):
-        path = os.path.join(target_dir, file_name + "." + "xml")
+        path = construct_path(target_dir, file_name)
         write_xml(xml_file, path)
         return
     if(all([xml_file, file_name])):
         target_dir = r"D:\ecoinvent_scripts"
-        path = os.path.join(target_dir, file_name + "." + "xml")
+        path = construct_path(target_dir, file_name)
         write_xml(xml_file, path)
         return
     if(all([xml_file, target_dir])):
         file_name = r"xml_result_file"
-        path = os.path.join(target_dir, file_name + "." + "xml")
+        path = construct_path(target_dir, file_name)
         write_xml(xml_file, path)
         return
+
+
+def construct_path(target_dir, file_name):
+    path = None
+    if file_name.endswith(".xml"):
+        path = os.path.join(target_dir, file_name)
+    else:
+        path = os.path.join(target_dir, file_name + "." + "xml")
+    return path
 
 
 def write_xml(xml_file, path):

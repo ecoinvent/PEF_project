@@ -51,6 +51,7 @@ class ParseProcessXML:
         exchanges_rows = []
         meta_rows = []
         self.__create_name_list()
+        parsed_file = None
         for file in tqdm(self.files):
             try:
                 with open(file, "r", encoding="utf-8") as xml_f:
@@ -238,7 +239,7 @@ class ParseProcessXML:
 
 def main():
     obj = ParseProcessXML(
-        r"C:\Dropbox (ecoinvent)\ei-int\technical\internal\IT Projects\format converters\ecoSpold2 and ILCD\Conversion tests\OpenLCA\large set of datasets 2\output\ILCD\ILCD\processes"
+        r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\input\7_12_2020_15_50_52_Turkey_energy_dataset_ilcd\processes"
     )
     obj.parse_files()
     obj.start_process()

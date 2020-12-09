@@ -23,7 +23,7 @@ class ParseExchangeOfProcessAndFlowsXmls:
     """generate excel file that contains 3 different tabs(meta, upr, pivot) from the process files"""
     common = "{http://lca.jrc.it/ILCD/Common}"
     process = "{http://lca.jrc.it/ILCD/Process}"
-    flow_files_path = r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\input\flows\flows"
+    flow_files_path = r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\input\7_12_2020_15_50_52_Turkey_energy_dataset_ilcd\flows"
 
     def __init__(self, source_dir):
         self.source_dir = source_dir
@@ -47,7 +47,6 @@ class ParseExchangeOfProcessAndFlowsXmls:
     def parse_files(self):
         """[summary]
         """
-        exchanges_rows = []
         meta_rows = []
         self.__create_name_list()
         for file in tqdm(self.files):
@@ -124,10 +123,10 @@ class ParseExchangeOfProcessAndFlowsXmls:
             exchanges_rows ([type]): [description]
         """
         self.meta_df = pd.DataFrame(meta_rows)
-        write_df_to_excel(files_path.EXCEL_DESTINATION_DIRECTORY, "processFlows_to_excel_thinkstep_complete.xlsx", self.meta_df)
+        write_df_to_excel(files_path.EXCEL_DESTINATION_DIRECTORY, "process_and_Flows_turkish_Data.xlsx", self.meta_df)
 
 
 if __name__ == "__main__":
     obj = ParseExchangeOfProcessAndFlowsXmls(
-        r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\input\processes"
+        r"D:\ecoinvent_scripts\PEF_project\PEF_Project\ILCD_Reader\Data\input\7_12_2020_15_50_52_Turkey_energy_dataset_ilcd\processes"
     )

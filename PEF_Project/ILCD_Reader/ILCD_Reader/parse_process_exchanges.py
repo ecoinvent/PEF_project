@@ -18,7 +18,6 @@ class ParseXML:
 
 
 class ParseProcessExchanges:
-    """generate excel file that contains 3 different tabs(meta, upr, pivot) from the process files"""
     common = "{http://lca.jrc.it/ILCD/Common}"
     process = "{http://lca.jrc.it/ILCD/Process}"
 
