@@ -1,6 +1,7 @@
 import logging
 import time
 import pef.config.transition_phase as cfg
+import pef.config.next as next
 import pef.runner as pr
 
 formatter = logging.Formatter(
@@ -25,4 +26,5 @@ log = logging.getLogger(__name__)
 start_time = time.time()
 log.info("start pipeline")
 res = pr.run_pef_steps(cfg.steps, cfg.starts, cfg.ends, cfg.load_init_data)
+#res = pr.run_pef_steps(next.steps, next.starts, next.ends, next.load_init_data)
 log.info("completed in %s seconds", round(time.time() - start_time))

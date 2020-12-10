@@ -1,13 +1,11 @@
 import pickle
+
 import pandas as pd
-import pef.steps.cleanup as cl
 import pef.steps.replacement as rep
-import pef.steps.disaggregation as di
-import pef.steps.delivery as de
 from pef.Data import PefData
 
 p = "data/"
-matrix_folder=p+"matrix/"
+matrix_folder = p + "matrix/3.7.1/"
 A_PKL = matrix_folder + "A.pkl"
 B_PKL = matrix_folder + "B.pkl"
 C_PKL = matrix_folder + "C.pkl"
@@ -25,20 +23,14 @@ XML_OUTPUT_FOLDER = p + "output/deliverables/"
 REVIEW_OUTPUT_FOLDER = p + "output/steps/"
 
 _steps = [
-    {
-        "step_id": "step_0",
-        "step_fn": cl.cleanup,
-        "CALC_CONTRIB": False,
-        "STORE_CONTRIB": False,
-        "CALC_LCIA": True,
-        "STORE_LCIA": True,
-    },
+
     {
         "step_id": "step_9a",
         "step_fn": rep.energy_and_transport,
         "THINKSTEP_PROCESSES": THINKSTEP_PROCESSES,
         "TS_EXCHANGES_TO_BE_MAPPED": TS_EXCHANGES_TO_BE_MAPPED,
         "PILOT_TS_DATA_USED": PILOT_TS_DATA_USED,
+        "STORE_MATRICES": True,
     },
     {
         "step_id": "step_9b",
@@ -46,22 +38,7 @@ _steps = [
         "THINKSTEP_PROCESSES": THINKSTEP_PROCESSES,
         "TS_EXCHANGES_TO_BE_MAPPED": TS_EXCHANGES_TO_BE_MAPPED,
         "TS_INTEGRATE_EOL_PACK": TS_INTEGRATE_EOL_PACK,
-    },
-    {
-        "step_id": "step_12a",
-        "step_fn": di.disaggregation,
-    },
-    {
-        "step_id": "step_12b",
-        "step_fn": de.fill_xml_template,
-        "XML_TEMPLATE_FOLDER": XML_TEMPLATE_FOLDER,
-        "XML_OUTPUT_FOLDER": XML_OUTPUT_FOLDER,
-        "LCIA_EF3": LCIA_EF3,
-        "MAPPING_EF": MAPPING_EF,
-        "CALC_CONTRIB": True,
-        "STORE_CONTRIB": True,
-        "CALC_LCIA": True,
-        "STORE_LCIA": True
+        "STORE_MATRICES": True,
     }
 
 ]
@@ -69,10 +46,11 @@ pipeline_config = {
     "REVIEW_OUTPUT_FOLDER": REVIEW_OUTPUT_FOLDER,
     "CALC_CONTRIB": False,
     "STORE_CONTRIB": False,
-    "CALC_LCIA": False,
-    "STORE_LCIA": False,
+    "CALC_LCIA": True,
+    "STORE_LCIA": True,
     "STORE_MATRICES": True
 }
+
 
 def load_init_data():
     A = pickle.load(open(A_PKL, "rb"))
@@ -87,4 +65,4 @@ def load_init_data():
 
 steps = [dict(pipeline_config, **x) for x in _steps]
 starts = None
-ends = "step_12b"
+ends = "step_9b"
