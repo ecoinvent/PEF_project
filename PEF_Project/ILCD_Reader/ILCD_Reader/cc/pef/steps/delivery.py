@@ -5,6 +5,8 @@ import pandas as pd
 import os
 import logging
 
+from pef.Data import PefData
+
 log = logging.getLogger(__name__)
 
 
@@ -33,7 +35,7 @@ def create_exchange_element(dsInternalId, row):
                                              COMMON + "shortDescription",
                                              attrib={XML + "lang": "en"})
     short_description._setText(descr)
-    objectify.SubElement(exchange, "exchangeDirection")._setText("Output")
+    objectify.SubElement(exchange, "exchangeDirection")._setText(row["direction"])
     objectify.SubElement(exchange, "meanAmount")._setText(amount)
     objectify.SubElement(exchange, "resultingAmount")._setText(amount)
     objectify.SubElement(exchange, "relativeStandardDeviation95In")._setText("0.0")
@@ -108,7 +110,7 @@ def buildmapping(B_idx, mapping_ef):
     log.info("build elementary flow to ILCD nomenclature mapping")
     mapping = pd.read_excel(mapping_ef, sheet_name="eiEF3.0_mappinf_EF3.0", skiprows=[0])
     mapping = mapping[["exchange name", "compartment", "subcompartment",
-                       "ID", "location", "FLOW_name", "FLOW_class0", "FLOW_class1", "FLOW_class2", "unit"]]
+                       "ID", "location", "FLOW_name", "FLOW_class0", "FLOW_class1", "FLOW_class2", "unit", "direction"]]
     mapping = B_idx.merge(
         mapping.rename(columns={"exchange name": "name"}),
         on=["name", "compartment", "subcompartment"],
@@ -122,17 +124,16 @@ def buildmapping(B_idx, mapping_ef):
     return mapping.drop_duplicates()
 
 
-def fill_xml_template(conf, d):
-    deliverables, B_idx, C_idx = [d[k] for k in ("deliverables", "B_idx", "C_idx")]
+def fill_xml_template(conf, data: PefData) -> PefData:
     in_path, out_path, lcia_ef3, mapping_ef = [conf[k] for k in
                                                ("XML_TEMPLATE_FOLDER", "XML_OUTPUT_FOLDER", "LCIA_EF3", "MAPPING_EF")]
-    log.info("xml fill start, deliverables: %s", len(deliverables))
+    log.info("xml fill start, deliverables: %s", len(data.deliverables))
     lcia_methods = pd.read_excel(lcia_ef3)
-    lcia = lcia_methods.merge(C_idx, left_on=["LCIAMethod_name"], right_on=["indicator"])
-    lci = buildmapping(B_idx, mapping_ef)
-    for (k, v) in deliverables.iterrows():
+    lcia = lcia_methods.merge(data.C_idx, left_on=["LCIAMethod_name"], right_on=["indicator"])
+    lci = buildmapping(data.B_idx, mapping_ef)
+    for (k, v) in data.deliverables.iterrows():
         log.debug("write %s - %s - %s", v["activityName"], v["geography"], v["reference product"])
-        log.debug("blackbox:%s.xml, lci:%s.xml, elementary: %s.xml", v["blackboxId"],v["lciId"],v["elementaryId"])
+        log.debug("blackbox:%s.xml, lci:%s.xml, elementary: %s.xml", v["blackboxId"], v["lciId"], v["elementaryId"])
         fill(in_path,
              out_path + "blackbox/",
              lci,
@@ -140,14 +141,14 @@ def fill_xml_template(conf, d):
              v["blackboxId"],
              v["black_box_lci"],
              v["black_box_lcia"])
-        log.debug("  - lci %s", v["lciId"])
-        fill(in_path,
-             out_path + "lci/",
-             lci,
-             lcia,
-             v["lciId"],
-             v["full_lci"],
-             v["full_lcia"])
+        #log.debug("  - lci %s", v["lciId"])
+        #fill(in_path,
+        #     out_path + "lci/",
+        #     lci,
+        #     lcia,
+        #     v["lciId"],
+        #     v["full_lci"],
+        #     v["full_lcia"])
         log.debug("  - elementary %s", v["elementaryId"])
         fill(in_path,
              out_path + "elementary/",
@@ -157,4 +158,4 @@ def fill_xml_template(conf, d):
              v["elementary_lci"],
              v["elementary_lcia"])
     log.info("xml fill completed")
-    return d
+    return data

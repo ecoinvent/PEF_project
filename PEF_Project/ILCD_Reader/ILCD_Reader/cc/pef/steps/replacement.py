@@ -3,6 +3,9 @@ import numpy as np
 from scipy import sparse
 from lxml import objectify
 import logging
+
+from pef.Data import PefData
+
 log = logging.getLogger(__name__)
 
 COMMON = "{http://lca.jrc.it/ILCD/Common}"
@@ -129,33 +132,31 @@ def run_energy_and_transport(TS_EXCHANGES_TO_BE_MAPPED, THINKSTEP_PROCESS, PILOT
         x = int(row['process ie index'])
         y = int(row['matrix ie index'])
         v = -row["share"]
-        log.debug("update 1 to many [%s,%s,%s]",x,y,v)
+        log.debug("update 1 to many [%s,%s,%s]", x, y, v)
         A[x, y] = v
         B[:, y] = np.zeros(B.shape[0])
     return sparse.csc_matrix(A), sparse.csc_matrix(B)
 
 
-def packaging_and_eol(conf, d):
+def packaging_and_eol(conf, data: PefData) -> PefData:
     log.info("start replacements: packaging and end of life")
-    A, B, A_idx, B_idx = [d[k] for k in ("A", "B", "A_idx", "B_idx")]
     (A, B) = run_packaging_and_eol(
         conf["TS_EXCHANGES_TO_BE_MAPPED"],
         conf["THINKSTEP_PROCESSES"],
         conf["TS_INTEGRATE_EOL_PACK"],
-        A, B, A_idx, B_idx)
-    d["A"] = A
-    d["B"] = B
-    return d
+        data.A, data.B, data.A_idx, data.B_idx)
+    data.A = A
+    data.B = B
+    return data
 
 
-def energy_and_transport(conf, d):
+def energy_and_transport(conf, data: PefData) -> PefData:
     log.info("start replacements: energy and transports")
-    A, B, B_idx = [d[k] for k in ("A", "B", "B_idx")]
     (A, B) = run_energy_and_transport(
         conf["TS_EXCHANGES_TO_BE_MAPPED"],
         conf["THINKSTEP_PROCESSES"],
         conf["PILOT_TS_DATA_USED"],
-        A, B, B_idx)
-    d["A"] = A
-    d["B"] = B
-    return d
+        data.A, data.B, data.B_idx)
+    data.A = A
+    data.B = B
+    return data

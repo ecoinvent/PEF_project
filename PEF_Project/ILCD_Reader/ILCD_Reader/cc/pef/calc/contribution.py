@@ -43,10 +43,7 @@ def _store_batch(C_idx, path, part, activityName, df):
     tmp.to_csv(file_path, index=False)
 
 
-def store_contrib(data, path):
-    C_idx, c = [data[k] for k in ("C_idx", "contribution")]
-
-
+def store_contrib(c,C_idx, path):
     log.info("store contrib to: %s", path)
     batch = []
     part = 0
@@ -69,19 +66,18 @@ def store_contrib(data, path):
 
 
 def contribution(data):
-    A, B, C, LCIA, A_idx, B_idx, C_idx = [data[k] for k in ("A", "B", "C", "LCIA", "A_idx", "B_idx", "C_idx")]
-    Z_df = _z_df(A, LCIA, A_idx)
-    B_df = _b_df(B, C, A_idx, B_idx)
+    Z_df = _z_df(data.A, data.LCIA, data.A_idx)
+    B_df = _b_df(data.B, data.C, data.A_idx, data.B_idx)
     c = pd.concat([Z_df
                   .rename(columns={"activityName_exc": "name",
                                    "geography_exc": "compartment",
                                    "product_exc": "subcompartment"}),
                    B_df],
                   ignore_index=True).sort_values(["activityName", "geography", "product"])
-    c["sign"] = c["col"].apply(lambda x: A[x, x])
+    c["sign"] = c["col"].apply(lambda x: data.A[x, x])
     c["val"] = c["val"] * c["sign"]
     c.drop("sign", inplace=True, axis=1)
 
     for i in range(28):
         c[i] = c[i] * c["val"]
-    return c.rename(columns=C_idx.set_index('index')['indicator'].to_dict())
+    return c.rename(columns=data.C_idx.set_index('index')['indicator'].to_dict())

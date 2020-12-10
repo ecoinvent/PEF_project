@@ -4,3 +4,6 @@
 *.pyc
 *.pkl
 *.xlsx
+*.xlsx#
+.vscode
+.idea
