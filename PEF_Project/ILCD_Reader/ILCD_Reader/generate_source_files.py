@@ -22,8 +22,8 @@ class GenerateSourceFiles:
 
     def generated_sources(self):
         sheet = "newSourceDetails"
-        self._read_excelTemplate()
-        # self._generate_UUID(sheet)
+        # self._read_excelTemplate()
+        self._generate_UUID(sheet)
         self._create_dict_of_list(sheet)
         self._process_xmls()
         # self._save_excel()
