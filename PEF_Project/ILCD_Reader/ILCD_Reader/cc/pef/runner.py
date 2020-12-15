@@ -1,11 +1,24 @@
+import logging
 import os
 import pickle
-import pef.calc.contribution as co
-import logging
+
 import pandas as pd
+
+import pef.calc.contribution as co
 from pef.Data import PefData
 
 log = logging.getLogger(__name__)
+
+
+def store_matrices(data, matrix_folder):
+    pickle.dump(data, open(f"{matrix_folder}/data.pkl", "wb"))
+    pickle.dump(data.A, open(f"{matrix_folder}/A.pkl", "wb"))
+    pickle.dump(data.B, open(f"{matrix_folder}/B.pkl", "wb"))
+    pickle.dump(data.C, open(f"{matrix_folder}/C.pkl", "wb"))
+    with pd.ExcelWriter(f"{matrix_folder}/indexes.xlsx") as writer:
+        data.A_idx.to_excel(writer, sheet_name="ie", index=False)
+        data.B_idx.to_excel(writer, sheet_name="ee", index=False)
+        data.C_idx.to_excel(writer, sheet_name="LCIA", index=False)
 
 
 def post_process(data: PefData, step):
@@ -17,7 +30,7 @@ def post_process(data: PefData, step):
     if step["STORE_MATRICES"]:
         log.info("%s, storing matrices", step_id)
         os.makedirs(f"{matrix_folder}/", exist_ok=True)
-        pickle.dump(data, open(f"{matrix_folder}/data.pkl", "wb"))
+        store_matrices(data, matrix_folder)
     if step["CALC_LCIA"]:
         log.info("%s, calculate LCI and scores", step_id)
         data.solve();
@@ -60,6 +73,8 @@ def run_pef_steps(steps, cache_from, stop_at, init_data):
         elif data is not None:
             log.debug("step config %s", {i: step[i] for i in step if i != 'step_fn'})
             data = pre_process(data, step)
+            print(data.A.shape)
+            print(data.A_idx.shape)
             data = step["step_fn"](step, data)
             data = post_process(data, step)
             if step_id == stop_at:

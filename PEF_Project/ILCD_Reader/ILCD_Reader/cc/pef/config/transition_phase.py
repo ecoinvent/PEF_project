@@ -48,6 +48,10 @@ _steps = [
         "TS_INTEGRATE_EOL_PACK": TS_INTEGRATE_EOL_PACK,
     },
     {
+        "step_id": "step_9c",
+        "step_fn": rep.create_proc,
+    },
+    {
         "step_id": "step_12a",
         "step_fn": di.disaggregation,
     },

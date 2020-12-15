@@ -93,7 +93,8 @@ mix_activities = {
     'sodium sulfate production mix',
     'titanium dioxide production mix',
     'ethoxylated alcohol (AE3), oleobased, production mix',
-    'TEA-Esterquat (C16-18) production'
+    'TEA-Esterquat (C16-18) production',
+    "silicon, production mix"
 }
 
 
